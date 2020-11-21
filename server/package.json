@@ -14,10 +14,8 @@
     "nodemon": "^2.0.6"
   },
   "scripts": {
-    "start": "node server/bin/www",
-    "backend": "nodemon server/bin/www",
-    "frontend": "npm run start --prefix client",
-    "dev": "concurrently \"npm run backend\" \"npm run start --prefix client\""
+    "start": "node bin/www",
+    "dev": "nodemon bin/www"
   },
   "author": "zTsugumi",
   "license": "ISC"

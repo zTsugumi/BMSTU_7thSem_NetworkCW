@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 var app = require('../app');
-var debug = require('debug')('quinxserver:server');
+var debug = require('debug');
 var http = require('http');
 var https = require('https');
 var fs = require('fs');
@@ -9,9 +9,10 @@ var fs = require('fs');
 /**
  * Get port from environment and store in Express.
  */
-var port = normalizePort(process.env.PORT || '3000');
+var port = normalizePort(process.env.SERVER_PORT || '3000');
+var secPort = normalizePort(process.env.SERVER_SECPORT || '3443')
 app.set('port', port);
-app.set('secPort', port + 443);
+app.set('secPort', secPort);
 
 /**
  * Create HTTP server.
