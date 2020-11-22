@@ -1,7 +1,7 @@
-# Pull official base image
+# pull official base image
 FROM node:15.2.1-alpine3.10
 
-# Create app directory
+# create app directory
 RUN mkdir -p /app/server
 WORKDIR /app/server
 
