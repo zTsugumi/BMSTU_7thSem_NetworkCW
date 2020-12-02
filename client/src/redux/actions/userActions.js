@@ -1,7 +1,8 @@
 import {
   SIGNUP_REQUEST, SIGNUP_SUCCESS, SIGNUP_FAILURE,
   SIGNIN_REQUEST, SIGNIN_SUCCESS, SIGNIN_FAILURE,
-  SIGNOUT_REQUEST, SIGNOUT_SUCCESS, SIGNOUT_FAILURE
+  SIGNOUT_REQUEST, SIGNOUT_SUCCESS, SIGNOUT_FAILURE,
+  AUTH_REQUEST, AUTH_SUCCESS, AUTH_FAILURE,
 } from './allTypes';
 import { SERVER_USER } from '../../shared/config';
 
@@ -185,18 +186,60 @@ const signoutUser = () => (dispatch) => {
 }
 
 /******************************************* AUTH *******************************************/
-// export function auth() {
-//   const request = axios.get(`${USER_SERVER}/auth`)
-//     .then(response => response.data);
+const authRequest = () => {
+  return {
+    type: AUTH_REQUEST
+  }
+}
 
-//   return {
-//     type: AUTH_USER,
-//     payload: request
-//   }
-// }
+const authSuccess = () => {
+  return {
+    type: AUTH_SUCCESS
+  }
+}
+
+const authError = (message) => {
+  return {
+    type: AUTH_FAILURE,
+    payload: message
+  }
+}
+
+const authUser = () => (dispatch) => {
+  dispatch(authRequest());
+
+  return fetch(`${SERVER_USER}/auth`)
+    .then(
+      response => {
+        if (response.ok) {
+          return response;
+        } else {
+          var error = new Error('Error ' + response.status + ': ' + response.statusText);
+          error.response = response;
+          throw error;
+        }
+      },
+      error => {
+        throw error;
+      }
+    )
+    .then(response => response.json())
+    .then(response => {
+      if (response.success) {
+        dispatch(authSuccess(response));
+      }
+      else {
+        var error = new Error('Error ' + response.status);
+        error.response = response;
+        throw error;
+      }
+    })
+    .catch(error => dispatch(authError(error.message)));
+}
 
 export default {
   signupUser,
   signinUser,
-  signoutUser
+  signoutUser,
+  authUser,
 }
