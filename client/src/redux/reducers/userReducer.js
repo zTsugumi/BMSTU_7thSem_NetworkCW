@@ -5,9 +5,7 @@ import {
   AUTH_REQUEST, AUTH_SUCCESS, AUTH_FAILURE,
 } from '../actions/allTypes';
 
-export default function (state = {
-  isLoading: false
-}, action) {
+const users = (state = { isLoading: false }, action) => {
   switch (action.type) {
     case SIGNUP_REQUEST:
       return { ...state, isLoading: true, signupRequest: action.payload }
@@ -41,3 +39,5 @@ export default function (state = {
       return state;
   }
 }
+
+export default users;

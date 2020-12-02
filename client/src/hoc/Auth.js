@@ -11,8 +11,6 @@ function Auth(ComposedClass, reload, adminRoute = null) {
       dispatch(AllActions.UserActions.authUser())
         .then(
           async (res) => {
-            console.log(res);
-
             if (await !res.payload.isAuth) {
               if (reload) {
                 props.history.push('/register_login')
