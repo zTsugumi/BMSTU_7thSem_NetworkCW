@@ -1,8 +1,8 @@
-var express = require('express');
-var createError = require('http-errors');
-var path = require('path');
-var config = require('./config/key');
-var mongoose = require('mongoose');
+const http = require('http');
+const mongoose = require('mongoose');
+const config = require('./config/key');
+const utils = require('./helpers/utils');
+const userCtrl = require('./controllers/userCtrl');
 
 /**
  * Connect to mongodb through mongoose
@@ -15,53 +15,54 @@ var connect = mongoose.connect(config.mongoURI,
   .then(() => console.log('Connected to MongoDB ...'))
   .catch(err => console.log(err));
 
-var userRouter = require('./routes/users');
-
 /**
- * Create express app
+ * Create HTTP server + REST api
  */
-var app = express();
+var server = http.createServer((req, res) => {
+  switch (req.url) {
+    case "/api/users":
+      switch (req.method) {
+        case 'GET':
+          // WIP add admin verification
+          userCtrl.findAll(req, res);
+          break;
+        default:
+          utils.sendJsonResponse(res, 501, { err: "Not implemented" });
+      }
+      break;
 
-// Redirect all incoming request to HTTPS
-app.all('*', (req, res, next) => {
-  if (req.secure) {
-    return next();
-  }
-  else {
-    res.redirect(307, 'https://' + req.hostname + ':' + app.get('secPort') + req.url);
+    case "/api/users/signup":
+      switch (req.method) {
+        case 'POST':
+          // WIP email verification
+          userCtrl.create(req, res);
+          break;
+        default:
+          utils.sendJsonResponse(res, 501, { err: "Not implemented" });
+      }
+      break;
+    case "/api/users/signin":
+      switch (req.method){
+        case 'POST':
+          userCtrl.signin(req, res);
+          break;
+        default:
+          utils.sendJsonResponse(res, 501, { err: "Not implemented" });
+      }
+      break;
+    case "/api/users/signout":
+      // WIP
+      break;
+    default:
+      utils.sendJsonResponse(res, 404, "Resource not found");
   }
 })
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
 
-// API WIP
-app.use('/api/users', userRouter);
-
-// If in production => serve static assets
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static('Frontend/build'));
-  app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "../Frontend", "build", "index.html"));
-  });
-}
-
-// Catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  next(createError(404));
+/**
+ * Make server listen
+ */
+server.listen({ host: config.hostname, port: config.port }, () => {
+  console.log(`Server running on http://${config.hostname}:${config.port}`);
 });
 
-// error handler
-app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.json({
-    message: err.message,
-    error: err
-  });
-});
-
-module.exports = app;
+module.exports = server;
