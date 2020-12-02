@@ -1,0 +1,14 @@
+.form {
+  width: 350px;
+}
+
+.form__item {
+  padding        : 0.1rem 0rem;
+  display        : flex;
+  justify-content: center;
+  align-items    : center;
+}
+
+.form .register-form-button {
+  min-width: 100%;
+}

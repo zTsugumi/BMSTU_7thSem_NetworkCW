@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { withRouter } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { Formik } from 'formik';
+import * as Yup from 'yup';
 import { Form, Input, Button, Checkbox, Typography } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import * as Yup from 'yup';
 import AllActions from '../../../redux/actions/allActions';
 import './LoginPage.css';
 
@@ -25,10 +25,14 @@ function LoginPage(props) {
 
   // Formik is a wrapper for a normal form
   return (
-    <Formik initialValues={{
-      email: initialEmail,
-      password: '',
-    }}
+    <Formik
+      // Initial values
+      initialValues={{
+        email: initialEmail,
+        password: '',
+      }}
+
+      // Validation Schema using yup
       validationSchema={Yup.object().shape({
         email: Yup.string()
           .email('Email is invalid')
@@ -37,6 +41,8 @@ function LoginPage(props) {
           .min(6, 'Password must be at least 6 characters')
           .required('Password is required'),
       })}
+
+      // onSubmit handler
       onSubmit={(values, actions) => {
         setTimeout(() => {
           let dataToSubmit = {
@@ -45,18 +51,20 @@ function LoginPage(props) {
           };
 
           dispatch(AllActions.UserActions.loginUser(dataToSubmit))
-            .then(res => {
-              if (res.payload.loginSuccess) {
-                if (rememberMe === true) {
-                  window.localStorage.setItem('rememberMe', values.id);
+            .then(
+              res => {
+                // WIP
+                if (res.payload.loginSuccess) {
+                  if (rememberMe === true) {
+                    window.localStorage.setItem('rememberMe', values.id);
+                  } else {
+                    localStorage.removeItem('rememberMe');
+                  }
+                  props.history.push('/');
                 } else {
-                  localStorage.removeItem('rememberMe');
+                  setFormErrorMessage('Check out your Account or Password again')
                 }
-                props.history.push('/');
-              } else {
-                setFormErrorMessage('Check out your Account or Password again')
-              }
-            })
+              })
             .catch(err => {
               setFormErrorMessage('Check out your Account or Password again')
               setTimeout(() => {
@@ -71,8 +79,8 @@ function LoginPage(props) {
       {props => (
         <div className='app'>
           <Title level={2}>Log In</Title>
-          <form onSubmit={props.handleSubmit} className='form'>
-            <Form.Item required className='form__item'>
+          <Form className='form' onSubmit={props.handleSubmit} >
+            <Form.Item className='form__item' required>
               <Input id='email'
                 prefix={<UserOutlined className='form__icon_color' />}
                 placeholder='Enter your email'
@@ -89,7 +97,7 @@ function LoginPage(props) {
               )}
             </Form.Item>
 
-            <Form.Item required className='form__item'>
+            <Form.Item className='form__item' required >
               <Input id='password'
                 prefix={<LockOutlined className='form__icon_color' />}
                 placeholder='Enter your password'
@@ -126,13 +134,14 @@ function LoginPage(props) {
                   htmlType='submit'
                   className='login-form-button'
                   disabled={props.isSubmitting}
-                  onSubmit={props.handleSubmit}>
+                  onSubmit={props.handleSubmit}
+                >
                   Log in
                 </Button>
               </div>
-              <a href='/register'>Register now!</a>
+              <a href='/signup'>Register now!</a>
             </Form.Item>
-          </form>
+          </Form>
         </div>
       )}
     </Formik >

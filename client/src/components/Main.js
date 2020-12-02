@@ -2,9 +2,10 @@ import React, { Suspense } from 'react';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import Auth from '../hoc/Auth';
 import NavBar from './views/NavBar/NavBar';
-import HomePage from './views/HomePage/HomePage';
 import Footer from './views/Footer/Footer';
+import HomePage from './views/HomePage/HomePage';
 import LoginPage from './views/LoginPage/LoginPage';
+import RegisterPage from './views/RegisterPage/RegisterPage';
 
 function Main() {
   return (
@@ -14,6 +15,7 @@ function Main() {
         <Switch>
           <Route exact path='/' component={Auth(HomePage, null)} />
           <Route exact path='/signin' component={Auth(LoginPage, false)} />
+          <Route exact path='/signup' component={Auth(RegisterPage, false)} />
         </Switch>
       </div>
       <Footer />
