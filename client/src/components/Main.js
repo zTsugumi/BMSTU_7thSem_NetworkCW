@@ -3,6 +3,7 @@ import { Route, Switch, withRouter } from 'react-router-dom';
 import Auth from '../hoc/Auth';
 import NavBar from './views/NavBar/NavBar';
 import HomePage from './views/HomePage/HomePage';
+import Footer from './views/Footer/Footer';
 
 function Main() {
   return (
@@ -13,6 +14,7 @@ function Main() {
           <Route exact path="/" component={Auth(HomePage, null)} />
         </Switch>
       </div>
+      <Footer />
     </Suspense>
   )
 }
