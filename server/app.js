@@ -1,8 +1,11 @@
 const http = require('http');
 const mongoose = require('mongoose');
+const morgan = require('morgan');
 const config = require('./config/key');
 const utils = require('./helpers/utils');
+const cors = require('./helpers/cors');
 const userCtrl = require('./controllers/userCtrl');
+
 
 /**
  * Connect to mongodb through mongoose
@@ -15,47 +18,81 @@ var connect = mongoose.connect(config.mongoURI,
   .then(() => console.log('Connected to MongoDB ...'))
   .catch(err => console.log(err));
 
+var logger = morgan('dev');
+
 /**
  * Create HTTP server + REST api
  */
 var server = http.createServer((req, res) => {
-  switch (req.url) {
-    case "/api/users":
-      switch (req.method) {
-        case 'GET':
-          // WIP add admin verification
-          userCtrl.findAll(req, res);
-          break;
-        default:
-          utils.sendJsonResponse(res, 501, { err: "Not implemented" });
-      }
-      break;
+  logger(req, res, (err) => {
+    cors.cors(req, res);
+    switch (req.url) {
+      case "/api/users":
+        switch (req.method) {
+          case 'OPTIONS':
+            // WIP
+            cors.cors(req, res);
+            utils.sendJsonResponse(res, 204, '');
+            break;
+          case 'GET':
+            // WIP add admin verification
+            userCtrl.findAll(req, res);
+            break;
+          default:
+            utils.sendJsonResponse(res, 501, { err: "Not implemented" });
+        }
+        break;
 
-    case "/api/users/signup":
-      switch (req.method) {
-        case 'POST':
-          // WIP email verification
-          userCtrl.create(req, res);
-          break;
-        default:
-          utils.sendJsonResponse(res, 501, { err: "Not implemented" });
-      }
-      break;
-    case "/api/users/signin":
-      switch (req.method){
-        case 'POST':
-          userCtrl.signin(req, res);
-          break;
-        default:
-          utils.sendJsonResponse(res, 501, { err: "Not implemented" });
-      }
-      break;
-    case "/api/users/signout":
-      // WIP
-      break;
-    default:
-      utils.sendJsonResponse(res, 404, "Resource not found");
-  }
+      case "/api/users/signup":
+        switch (req.method) {
+          case 'OPTIONS':
+            // WIP
+            utils.sendJsonResponse(res, 204, '');
+            break;
+          case 'POST':
+            // WIP email verification
+            userCtrl.signup(req, res);
+            break;
+          default:
+            utils.sendJsonResponse(res, 501, { err: "Not implemented" });
+        }
+        break;
+
+      case "/api/users/signin":
+        switch (req.method) {
+          case 'OPTIONS':
+            // WIP
+            utils.sendJsonResponse(res, 204, '');
+            break;
+          case 'POST':
+            userCtrl.signin(req, res);
+            break;
+          default:
+            utils.sendJsonResponse(res, 501, { err: "Not implemented" });
+        }
+        break;
+
+      case "/api/users/signout":
+        // WIP
+        break;
+
+      case "/api/users/auth":
+        switch (req.method) {
+          case 'OPTIONS':
+            utils.sendJsonResponse(res, 204, '');
+            break;
+          case 'GET':
+            userCtrl.auth(req, res);
+            break;
+          default:
+            utils.sendJsonResponse(res, 501, { err: "Not implemented" });
+        }
+        break;
+
+      default:
+        utils.sendJsonResponse(res, 404, "Resource not found");
+    }
+  })
 })
 
 /**

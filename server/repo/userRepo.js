@@ -1,5 +1,7 @@
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
+const config = require('../config/key');
+const jwt = require('jsonwebtoken');
 
 function findAll() {
   return User.find().exec();
@@ -7,6 +9,17 @@ function findAll() {
 
 function findOne(creds) {
   return User.findOne(creds).exec();
+}
+
+function findByToken(token, callback) {
+  jwt.verify(token, config.secretKey, (err, decode) => {
+    if (err) return callback(err);
+
+    User.findOne({ "_id": decode, "token": token }, (err, user) => {
+      if (err) return callback(err);
+      callback(null, user);
+    })
+  })
 }
 
 function create(creds) {
@@ -26,5 +39,6 @@ function create(creds) {
 module.exports = {
   findAll,
   findOne,
-  create
+  findByToken,
+  create,
 }

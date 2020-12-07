@@ -1,18 +1,18 @@
-const cors = require('cors');
+function cors(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Request-Method', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
+  res.setHeader('Access-Control-Allow-Headers', '*');
+}
 
-const whitelist = ['http://localhost:3001', 'https://localhost:3443', 'http://192.168.56.1:3001'];
-var corsOptionsDelegate = (req, callback) => {
-  var corsOptions;
+function corsWithOptions(req, res) {
+  const whitelist = ['http://localhost:3001'];
 
-  // If the incoming request is in whitelist
-  if (whitelist.indexOf(req.header('Origin')) !== -1) {
-    corsOptions = { origin: true };
-  }
-  else {
-    corsOptions = { origin: false };
-  }
-  callback(null, corsOptions);
+  var origin = req.headers.origin;
+
+  console.log(req);
+}
+
+module.exports = {
+  cors
 };
-
-exports.cors = cors();
-exports.corsWithOptions = cors(corsOptionsDelegate);

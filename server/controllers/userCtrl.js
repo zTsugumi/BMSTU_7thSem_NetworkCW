@@ -1,6 +1,6 @@
 const UserRepo = require('../repo/userRepo');
 const utils = require('../helpers/utils');
-const auth = require('../helpers/auth');
+const auths = require('../helpers/auth');
 
 // WIP: admin verification
 async function findAll(req, res) {
@@ -15,7 +15,7 @@ async function findAll(req, res) {
 }
 
 // WIP: email verification
-async function create(req, res) {
+async function signup(req, res) {
   try {
     const body = await utils.bodyParser(req);
     const newUser = {
@@ -37,8 +37,8 @@ async function create(req, res) {
       )
       .catch((err) => utils.sendJsonResponse(res, 500, { success: false, err: err.message }))
   }
-  catch (error) {
-    console.log(error);
+  catch (err) {
+    console.log(err);
   };
 }
 
@@ -72,13 +72,37 @@ async function signin(req, res) {
       )
       .catch((err) => utils.sendJsonResponse(res, 500, { success: false, err: err.message }));
   }
-  catch (error) {
-    console.log(error);
+  catch (err) {
+    console.log(err);
   }
+}
+
+async function auth(req, res) {
+  try {
+    await auths.auth(req, res)
+      .then(
+        (user) => {
+          utils.sendJsonResponse(res, 200, {
+            success: true,
+            isAdmin: user.role === 0 ? false : true,
+            email: user.email,
+            firstname: user.name,
+            lastname: user.lastname,
+            role: user.role,
+            image: user.image,
+          });
+        }
+      )
+      .catch((err) => utils.sendJsonResponse(res, 401, { success: false, message: "Auth failed" }));
+  }
+  catch (err) {
+    console.log(err);
+  };
 }
 
 module.exports = {
   findAll,
-  create,
-  signin
+  signup,
+  signin,
+  auth
 }

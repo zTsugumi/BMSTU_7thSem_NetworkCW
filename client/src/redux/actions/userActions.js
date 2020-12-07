@@ -31,7 +31,7 @@ const signupError = (message) => {
 const signupUser = (creds) => (dispatch) => {
   dispatch(signupRequest(creds));
 
-  return fetch(`${SERVER_USER}/register`, {
+  return fetch(`${SERVER_USER}/signup`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -237,9 +237,11 @@ const authUser = () => (dispatch) => {
     .catch(error => dispatch(authError(error.message)));
 }
 
-export default {
+const userActions = {
   signupUser,
   signinUser,
   signoutUser,
   authUser,
 }
+
+export default userActions;

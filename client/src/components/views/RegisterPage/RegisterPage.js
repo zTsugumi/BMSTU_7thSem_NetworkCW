@@ -67,7 +67,6 @@ function RegisterPage(props) {
       // onSubmit handler
       onSubmit={(values, actions) => {
         setTimeout(() => {
-
           let dataToSubmit = {
             email: values.email,
             password: values.password,
@@ -75,6 +74,8 @@ function RegisterPage(props) {
             lastname: values.lastname,
             image: `http://gravatar.com/avatar/${moment().unix()}?d=identicon`
           };
+
+          console.log(dataToSubmit);
 
           dispatch(AllActions.UserActions.registerUser(dataToSubmit))
             .then(
@@ -182,9 +183,8 @@ function RegisterPage(props) {
             </Form.Item>
 
             <Form.Item {...tailFormItemLayout} className='form__item'>
-              <Button type='primary'
+              <Button type='submit'
                 className='register-form-button'
-                onClick={props.handleSubmit}
                 disabled={props.isSubmitting}
               >
                 Submit

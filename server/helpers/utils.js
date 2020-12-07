@@ -17,25 +17,33 @@ function bodyParser(req) {
       });
 
       req.on('end', () => {
-        resolve(JSON.parse(body));
+        resolve(JSON.parse(body || '{}'));
       })
     }
-    catch (error) {
-      reject(error);
+    catch (err) {
+      reject(err);
     }
   });
 }
 
 function cookiesParser(req) {
-  var list = {},
-    rc = req.headers.cookie;
+  return new Promise((resolve, reject) => {
+    try {
+      var list = {};
+      var rc = req.headers.cookie;
 
-  rc && rc.split(';').forEach(function (cookie) {
-    var parts = cookie.split('=');
-    list[parts.shift().trim()] = decodeURI(parts.join('='));
+      rc && rc.split(';').forEach(function (cookie) {
+        var parts = cookie.split('=');
+        list[parts.shift().trim()] = decodeURI(parts.join('='));
+      });
+
+      resolve(list);
+    }
+    catch (err) {
+      reject(err);
+    }
   });
 
-  return list;
 }
 
 module.exports = {

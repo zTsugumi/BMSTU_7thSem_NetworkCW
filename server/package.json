@@ -6,15 +6,16 @@
     "bcrypt": "^5.0.0",
     "debug": "^4.3.1",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.10.15"
+    "mongoose": "^5.10.15",
+    "morgan": "^1.10.0"
   },
   "devDependencies": {
     "concurrently": "^5.3.0",
     "nodemon": "^2.0.6"
   },
-  "scripts": {
-    "start": "node bin/www",
-    "dev": "nodemon app"
+  "scripts": {    
+    "dev": "SET NODE_ENV=development&&nodemon app",
+    "start": "NODE_ENV=production node bin/www"
   },
   "author": "zTsugumi",
   "license": "ISC"
