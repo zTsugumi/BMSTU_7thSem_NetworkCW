@@ -14,10 +14,9 @@ const signupRequest = (creds) => {
   }
 }
 
-const signupSuccess = (response) => {
+const signupSuccess = () => {
   return {
-    type: SIGNUP_SUCCESS,
-    payload: response
+    type: SIGNUP_SUCCESS
   }
 }
 
@@ -54,7 +53,7 @@ const signupUser = (creds) => (dispatch) => {
     .then(response => response.json())
     .then(response => {
       if (response.success) {   // If server successfully create new user
-        dispatch(signupSuccess(response));
+        dispatch(signupSuccess());
       }
       else {
         var error = new Error('Error ' + response.status);
@@ -76,7 +75,7 @@ const signinRequest = (creds) => {
 const signinSuccess = (response) => {
   return {
     type: SIGNIN_SUCCESS,
-    payload: response
+    isAdmin: response.isAdmin
   }
 }
 
@@ -192,9 +191,12 @@ const authRequest = () => {
   }
 }
 
-const authSuccess = () => {
+const authSuccess = (creds) => {
+  console.log(creds);
+
   return {
-    type: AUTH_SUCCESS
+    type: AUTH_SUCCESS,
+    payload: cred
   }
 }
 

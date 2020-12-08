@@ -5,21 +5,69 @@ import {
   AUTH_REQUEST, AUTH_SUCCESS, AUTH_FAILURE,
 } from '../actions/allTypes';
 
-const users = (state = { isLoading: false }, action) => {
+const users = (state = {
+  isLoading: false,
+  isAuth: false,
+  isAdmin: false,
+  creds: null,
+  errMess: null
+}, action) => {
   switch (action.type) {
     case SIGNUP_REQUEST:
-      return { ...state, isLoading: true, signupRequest: action.payload }
+      return {
+        ...state,
+        isLoading: true,
+        isAuth: false,
+        isAdmin: false,
+        creds: action.payload,
+        errMess: null
+      };
     case SIGNUP_SUCCESS:
-      return { ...state, isLoading: false, signupSuccess: action.payload };
+      return {
+        ...state,
+        isLoading: false,
+        isAuth: false,
+        isAdmin: false,
+        creds: null,
+        errMess: null
+      };
     case SIGNUP_FAILURE:
-      return { ...state, isLoading: false, signupFail: action.payload };
+      return {
+        ...state,
+        isLoading: false,
+        isAuth: false,
+        isAdmin: false,
+        creds: null,
+        errMess: action.payload
+      };
 
     case SIGNIN_REQUEST:
-      return { ...state, isLoading: true, signinRequest: action.payload }
+      return {
+        ...state,
+        isLoading: true,
+        isAuth: false,
+        isAdmin: false,
+        creds: action.payload,
+        errMess: null
+      };
     case SIGNIN_SUCCESS:
-      return { ...state, isLoading: false, signinSuccess: action.payload };
+      return {
+        ...state,
+        isLoading: false,
+        isAuth: true,
+        isAdmin: action.isAdmin,
+        creds: null,
+        errMess: null
+      };
     case SIGNIN_FAILURE:
-      return { ...state, isLoading: false, signinFail: action.payload };
+      return {
+        ...state,
+        isLoading: false,
+        isAuth: false,
+        isAdmin: false,
+        creds: null,
+        errMess: action.payload
+      };
 
     case SIGNOUT_REQUEST:
       return { ...state, isLoading: true }
@@ -29,11 +77,32 @@ const users = (state = { isLoading: false }, action) => {
       return { ...state, isLoading: false, signoutFail: action.payload };
 
     case AUTH_REQUEST:
-      return { ...state, isLoading: true };
+      return {
+        ...state,
+        isLoading: true,
+        isAuth: false,
+        isAdmin: false,
+        creds: null,
+        errMess: null
+      };
     case AUTH_SUCCESS:
-      return { ...state, isLoading: false, authSuccess: action.payload };
+      return {
+        ...state,
+        isLoading: false,
+        isAuth: true,
+        isAdmin: action.payload.isAdmin,
+        creds: null,
+        errMess: null
+      };
     case AUTH_FAILURE:
-      return { ...state, isLoading: false, authfail: action.payload };
+      return {
+        ...state,
+        isLoading: false,
+        isAuth: false,
+        isAdmin: false,
+        creds: null,
+        errMess: action.payload
+      };
 
     default:
       return state;

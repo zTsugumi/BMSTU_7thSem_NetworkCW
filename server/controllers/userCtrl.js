@@ -33,7 +33,7 @@ async function signup(req, res) {
           user.password = undefined;    // password already saved in db
           utils.sendJsonResponse(res, 200, { success: true })
         },
-        (err) => utils.sendJsonResponse(res, 404, { success: false, err: err.message })
+        (err) => utils.sendJsonResponse(res, 403, { success: false, err: err.message })
       )
       .catch((err) => utils.sendJsonResponse(res, 500, { success: false, err: err.message }))
   }

@@ -4,6 +4,7 @@ function sendJsonResponse(res, status, content, cookie = null) {
   res.setHeader('Content-Length', JSON.stringify(content).length);
   if (cookie)
     res.setHeader('Set-Cookie', cookie);
+
   res.end(JSON.stringify(content));
 }
 
