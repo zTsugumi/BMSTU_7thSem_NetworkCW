@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Formik } from 'formik';
 import { Typography } from 'antd';
@@ -23,9 +23,22 @@ const formItemLayout = {
 
 function RegisterPage(props) {
   const dispatch = useDispatch();
-
-  const signupUser = (creds) => dispatch(AllActions.UserActions.signupUser(creds));
   const userState = useSelector(state => state.user);
+  const [formErrorMessage, setFormErrorMessage] = useState('');
+
+  // When userState is changed => the effect will update
+  useEffect(() => {
+    if (userState.regSuccess === true) {
+      props.history.push('/signin');
+    }
+    else if (userState.regSuccess === false) {
+      setFormErrorMessage("Sorry, we couldn't register. Please check your information again!");
+    }
+
+    return () => {
+      setFormErrorMessage('');
+    }
+  }, [userState, props]);
 
   const signupValidationSchema = Yup.object().shape({
     firstname: Yup.string()
@@ -54,12 +67,12 @@ function RegisterPage(props) {
         confirmPassword: ''
       }}
 
-      // Validation Schema using yup
+      // Validation Schema
       validationSchema={signupValidationSchema}
 
       // onSubmit Handler
       onSubmit={(values, actions) => {
-        setTimeout(() => {
+        setTimeout(async () => {
           const creds = {
             email: values.email,
             password: values.password,
@@ -68,27 +81,19 @@ function RegisterPage(props) {
             image: `http://gravatar.com/avatar/${moment().unix()}?d=identicon`
           };
 
-          signupUser(creds)
+          dispatch(AllActions.UserActions.signupUser(creds))
             .then(
               () => {
-                if (!userState.errMess) {
-                  alert(userState.errMess);
-                }
-                else {
-                  props.history.push('/signin');
-                }
+                actions.setSubmitting(false);
               }
             )
-
-          actions.setSubmitting(false);
-          actions.resetForm();
         }, 500);
       }}
     >
       {(props) => (
         <div className='app'>
+          <Title level={2}>Sign up</Title>
           <Form {...formItemLayout} className='form'>
-            <Title className='form__item' level={2}>Sign up</Title>
             <FormItem
               className='form__item'
               name='firstname'
@@ -109,7 +114,7 @@ function RegisterPage(props) {
               className='form__item'
               name='email'
               label='Email'
-              require={true}
+              required={true}
               hasFeedback={true}
               showValidateSuccess={true}
             >
@@ -135,6 +140,13 @@ function RegisterPage(props) {
             >
               <Input.Password name='confirmPassword' placeholder='Confirm your password' />
             </FormItem>
+            {formErrorMessage && (
+              <label>
+                <p className='form__item form__error'>
+                  {formErrorMessage}
+                </p>
+              </label>
+            )}
             <SubmitButton className='register-form-button'>Submit</SubmitButton>
           </Form>
         </div>
@@ -142,6 +154,5 @@ function RegisterPage(props) {
     </Formik>
   );
 };
-
 
 export default RegisterPage;

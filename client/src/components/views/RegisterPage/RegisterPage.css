@@ -6,6 +6,14 @@
   padding: 0.2rem 0rem;
 }
 
+.form__error {
+  color        : #ff0000bf;
+  padding      : 0.5rem 1rem;
+  font-size    : 0.7rem;
+  border       : 1px solid;
+  border-radius: 10px;
+}
+
 .form .register-form-button {
   min-width: 100%;
 }
