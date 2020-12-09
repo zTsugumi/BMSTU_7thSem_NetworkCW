@@ -24,7 +24,7 @@ const formItemLayout = {
 function RegisterPage(props) {
   const dispatch = useDispatch();
   const userState = useSelector(state => state.user);
-  const [formErrorMessage, setFormErrorMessage] = useState('');
+  const [formError, setFormError] = useState('');
 
   // When userState is changed => the effect will update
   useEffect(() => {
@@ -32,11 +32,11 @@ function RegisterPage(props) {
       props.history.push('/signin');
     }
     else if (userState.regSuccess === false) {
-      setFormErrorMessage("Sorry, we couldn't register. Please check your information again!");
+      setFormError("Sorry, we couldn't register your account. Please check your information again!");
     }
 
     return () => {
-      setFormErrorMessage('');
+      setFormError('');
     }
   }, [userState, props]);
 
@@ -140,10 +140,10 @@ function RegisterPage(props) {
             >
               <Input.Password name='confirmPassword' placeholder='Confirm your password' />
             </FormItem>
-            {formErrorMessage && (
+            {formError && (
               <label>
                 <p className='form__item form__error'>
-                  {formErrorMessage}
+                  {formError}
                 </p>
               </label>
             )}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { withRouter } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Formik } from 'formik';
@@ -13,20 +13,45 @@ const { Title } = Typography;
 
 function LoginPage(props) {
   const dispatch = useDispatch();
+  const userState = useSelector(state => state.user);
 
   // rememberMe holds the user email
-  const rememberMeChecked = localStorage.getItem('rememberMe') ? true : false;
-  const initialEmail = localStorage.getItem('rememberMe') ? localStorage.getItem('rememberMe') : '';
+  const [formError, setFormError] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
+  const [rememberData, setRememberData] = useState(
+    {
+      email: '',
+      password: ''
+    }
+  );
 
-  const [formErrorMessage, setFormErrorMessage] = useState('');
-  const [rememberMe, setRememberMe] = useState(rememberMeChecked);
+  // Run only 1 time after render
+  useEffect(() => {
+    const data = localStorage.getItem('rememberData');
+    if (data) {
+      setRememberMe(true);
+      setRememberData(JSON.parse(data));
+    }
+  }, []);
 
-  const handleRememberMe = () => {
-    setRememberMe(!rememberMe)
-  };
+  // Run when userState is changed
+  useEffect(() => {
+    if (userState.logSuccess === true) {
+      if (rememberMe === true) {
+        console.log(rememberData);
+      }
 
-  const signinUser = (creds) => dispatch(AllActions.UserActions.signinUser(creds));
-  const userState = useSelector(state => state.user);
+      // if (rememberMe === true) {
+      //   window.localStorage.setItem('rememberMe', values.id);
+      // } else {
+      //   localStorage.removeItem('rememberMe');
+      // }
+      props.history.push('/');
+    }
+    else if (userState.logSuccess === false) {
+      setFormError("Sorry, we couldn't login your account. Please check your information again!");
+    }
+  }, [props, userState, rememberMe, rememberData]);
 
   const signinValidationSchema = Yup.object().shape({
     email: Yup.string()
@@ -41,8 +66,8 @@ function LoginPage(props) {
     <Formik
       // Initial values
       initialValues={{
-        email: initialEmail,
-        password: '',
+        email: rememberData.email,
+        password: rememberData.password,
       }}
 
       // Validation Schema
@@ -56,22 +81,15 @@ function LoginPage(props) {
             password: values.password
           };
 
-          signinUser(creds)
+          if (rememberMe)
+            setRememberData(creds);
+
+          dispatch(AllActions.UserActions.signinUser(creds))
             .then(
               () => {
-                if (!userState.errMess) {
-                  setFormErrorMessage('Check out your Account or Password again');
-                }
-                else {
-                  if (rememberMe === true) {
-                    window.localStorage.setItem('rememberMe', values.id);
-                  } else {
-                    localStorage.removeItem('rememberMe');
-                  }
-                  props.history.push('/');
-                }
-              });
-          actions.setSubmitting(false);
+                actions.setSubmitting(false);
+              }
+            )
         }, 500);
       }}
     >
@@ -102,18 +120,17 @@ function LoginPage(props) {
                 placeholder='Enter your password'
               />
             </FormItem>
-
-            {formErrorMessage && (
+            {formError && (
               <label>
                 <p className='form__item form__error'>
-                  {formErrorMessage}
+                  {formError}
                 </p>
               </label>
             )}
             <div>
               <Checkbox
                 name='rememberMe'
-                onChange={handleRememberMe}
+                onChange={() => setRememberMe(!rememberMe)}
                 checked={rememberMe}
               >
                 Remember me
@@ -128,7 +145,8 @@ function LoginPage(props) {
             </div>
           </Form>
         </div>
-      )}
+      )
+      }
     </Formik >
   );
 };

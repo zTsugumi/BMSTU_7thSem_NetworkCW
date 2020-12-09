@@ -25,7 +25,10 @@ var logger = morgan('dev');
  */
 var server = http.createServer((req, res) => {
   logger(req, res, (err) => {
-    cors.cors(req, res);
+    // Setup cors
+    //cors.cors(req, res);
+    cors.corsWithOptions(req, res);
+
     switch (req.url) {
       case "/api/users":
         switch (req.method) {

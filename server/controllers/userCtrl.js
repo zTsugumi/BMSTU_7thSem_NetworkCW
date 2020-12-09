@@ -56,12 +56,12 @@ async function signin(req, res) {
 
               user.generateToken((err, user) => {
                 if (!err) {
-                  const cookie = [
+                  const cookies = [
                     `w_authExp=${user.tokenExp}`,
                     `w_auth=${user.token}`
                   ];
 
-                  utils.sendJsonResponse(res, 200, { success: true }, cookie);
+                  utils.sendJsonResponse(res, 200, { success: true }, cookies);
                 }
               });
             });

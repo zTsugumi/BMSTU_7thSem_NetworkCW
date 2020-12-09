@@ -1,18 +1,27 @@
 function cors(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Request-Method', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
-  res.setHeader('Access-Control-Allow-Headers', '*');
+  res.setHeader('Access-Control-Request-Method', 'X-Requested-With');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With');
+  res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, PUT, POST, DELETE');
 }
 
 function corsWithOptions(req, res) {
   const whitelist = ['http://localhost:3001'];
 
-  var origin = req.headers.origin;
+  if (whitelist.indexOf(req.headers.origin) !== -1) {
+    res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
+  }
+  else {
+    res.setHeader('Access-Control-Allow-Origin', null);
+  }
 
-  console.log(req);
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Request-Method', 'X-Requested-With');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With');
+  res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, PUT, POST, DELETE');
 }
 
 module.exports = {
-  cors
+  cors,
+  corsWithOptions
 };

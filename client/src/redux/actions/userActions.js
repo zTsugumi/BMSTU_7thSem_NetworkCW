@@ -1,7 +1,7 @@
 import {
   SIGNUP_SUCCESS, SIGNUP_FAILURE,
   SIGNIN_SUCCESS, SIGNIN_FAILURE,
-  SIGNOUT_REQUEST, SIGNOUT_SUCCESS, SIGNOUT_FAILURE,
+  SIGNOUT_SUCCESS, SIGNOUT_FAILURE,
   AUTH_SUCCESS, AUTH_FAILURE,
 } from './allTypes';
 import { SERVER_USER } from '../../shared/config';
@@ -56,10 +56,9 @@ const signupUser = (creds) => async (dispatch) => {
 };
 
 /****************************************** SIGNIN ******************************************/
-const signinSuccess = (creds) => {
+const signinSuccess = () => {
   return {
-    type: SIGNIN_SUCCESS,
-    payload: creds.isAdmin
+    type: SIGNIN_SUCCESS
   }
 }
 
@@ -71,12 +70,12 @@ const signinError = (message) => {
 }
 
 const signinUser = (creds) => (dispatch) => {
-  dispatch(signinRequest(creds));
-
-  return fetch(`${SERVER_USER}/register`, {
+  return fetch(`${SERVER_USER}/signin`, {
     method: 'POST',
+    credentials: 'include',
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
     },
     body: JSON.stringify(creds)
   })
@@ -96,13 +95,7 @@ const signinUser = (creds) => (dispatch) => {
     .then(response => response.json())
     .then(response => {
       if (response.success) {
-        // If login was successful, set the token in local storage
-        localStorage.setItem('token', response.token);
-        localStorage.setItem('creds', JSON.stringify(creds));
-        if (response.isAdmin)
-          localStorage.setItem('isAdmin', response.isAdmin);
-
-        dispatch(signinSuccess(response));
+        dispatch(signinSuccess());
       }
       else {
         var error = new Error('Error ' + response.status);
@@ -110,6 +103,7 @@ const signinUser = (creds) => (dispatch) => {
         throw error;
       }
     })
+    .then(() => dispatch(authUser()))
     .catch(error => dispatch(signinError(error.message)));
 };
 
@@ -128,8 +122,6 @@ const signoutError = (message) => {
 }
 
 const signoutUser = () => (dispatch) => {
-  dispatch(signoutRequest());
-
   localStorage.removeItem('token');
   localStorage.removeItem('creds');
   localStorage.removeItem('isAdmin');

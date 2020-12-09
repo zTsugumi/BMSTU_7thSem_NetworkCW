@@ -50,7 +50,10 @@ UserSchema.methods.comparePassword = function (password, callback) {
 }
 
 UserSchema.methods.generateToken = function (callback) {
-  this.token = jwt.sign(this._id.toHexString(), config.secretKey);
+  this.token = jwt.sign(
+    { _id: this._id },
+    config.secretKey,
+    { expiresIn: '1d' });
   this.save((err, user) => {
     if (err) return callback(err);
     callback(null, user);
