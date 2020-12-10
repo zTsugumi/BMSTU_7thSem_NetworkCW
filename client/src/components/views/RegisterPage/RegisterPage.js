@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { Formik } from 'formik';
 import { Typography } from 'antd';
 import { Form, FormItem, Input, SubmitButton } from 'formik-antd';
 import * as Yup from 'yup';
 import moment from 'moment';
-import AllActions from '../../../redux/actions/allActions';
+import { useHistory } from 'react-router-dom';
+import { Loading } from '../Loading/Loading';
 import './RegisterPage.css';
 
 const { Title } = Typography;
@@ -22,23 +22,22 @@ const formItemLayout = {
 };
 
 function RegisterPage(props) {
-  const dispatch = useDispatch();
-  const userState = useSelector(state => state.user);
   const [formError, setFormError] = useState('');
+  const history = useHistory();
+  const { users, signupUser } = props;
 
-  // When userState is changed => the effect will update
   useEffect(() => {
-    if (userState.regSuccess === true) {
-      props.history.push('/signin');
+    if (users.regSuccess === true) {
+      history.push('/signin');
     }
-    else if (userState.regSuccess === false) {
+    else if (users.regSuccess === false) {
       setFormError("Sorry, we couldn't register your account. Please check your information again!");
     }
 
     return () => {
       setFormError('');
     }
-  }, [props.history, userState]);
+  }, [users.regSuccess, history]);
 
   const signupValidationSchema = Yup.object().shape({
     firstname: Yup.string()
@@ -56,103 +55,106 @@ function RegisterPage(props) {
       .required('Confirm Password is required')
   });
 
-  return (
-    <Formik
-      // Initial values
-      initialValues={{
-        email: '',
-        firtname: '',
-        lastName: '',
-        password: '',
-        confirmPassword: ''
-      }}
+  const handleSubmit = async (values, actions) => {
+    actions.setSubmitting(true);
 
-      // Validation Schema
-      validationSchema={signupValidationSchema}
+    const creds = {
+      email: values.email,
+      password: values.password,
+      firstname: values.firstname,
+      lastname: values.lastname,
+      image: `http://gravatar.com/avatar/${moment().unix()}?d=identicon`
+    };
 
-      // onSubmit Handler
-      onSubmit={(values, actions) => {
-        setTimeout(async () => {
-          const creds = {
-            email: values.email,
-            password: values.password,
-            firstname: values.firstname,
-            lastname: values.lastname,
-            image: `http://gravatar.com/avatar/${moment().unix()}?d=identicon`
-          };
+    await signupUser(creds);
 
-          dispatch(AllActions.UserActions.signupUser(creds))
-            .then(
-              () => {
-                actions.setSubmitting(false);
-              }
-            )
-        }, 500);
-      }}
-    >
-      {(props) => (
-        <div className='app'>
-          <Title level={2}>Sign up</Title>
-          <Form {...formItemLayout} className='form'>
-            <FormItem
-              className='form__item'
-              name='firstname'
-              label='First Name'
-              required={true}
-            >
-              <Input name='firstname' placeholder='Enter your First Name' />
-            </FormItem>
-            <FormItem
-              className='form__item'
-              name='lastname'
-              label='Last Name'
-              required={true}
-            >
-              <Input name='lastname' placeholder='Enter your Last Name' />
-            </FormItem>
-            <FormItem
-              className='form__item'
-              name='email'
-              label='Email'
-              required={true}
-              hasFeedback={true}
-              showValidateSuccess={true}
-            >
-              <Input name='email' placeholder='Enter your Email' />
-            </FormItem>
-            <FormItem
-              className='form__item'
-              name='password'
-              label='Password'
-              required={true}
-              hasFeedback={true}
-              showValidateSuccess={true}
-            >
-              <Input.Password name='password' placeholder='Enter your password' />
-            </FormItem>
-            <FormItem
-              className='form__item'
-              name='confirmPassword'
-              label='Confirm'
-              required={true}
-              hasFeedback={true}
-              showValidateSuccess={true}
-            >
-              <Input.Password name='confirmPassword' placeholder='Confirm your password' />
-            </FormItem>
-            {formError && (
-              <label>
-                <p className='form__item form__error'>
-                  {formError}
-                </p>
-              </label>
-            )}
-            <SubmitButton className='register-form-button'>Submit</SubmitButton>
-          </Form>
-        </div>
-      )}
-    </Formik>
-  );
+    actions.setSubmitting(false);
+  }
+
+  if (users.isLoading) {
+    return (
+      <div className='app'>
+        <Loading />
+      </div>
+    );
+  }
+  else {
+    return (
+      <Formik
+        initialValues={{
+          email: '',
+          firtname: '',
+          lastName: '',
+          password: '',
+          confirmPassword: ''
+        }}
+        validationSchema={signupValidationSchema}
+        onSubmit={handleSubmit}
+      >
+        {(props) => (
+          <div className='app'>
+            <Title level={2}>Sign up</Title>
+            <Form {...formItemLayout} className='form'>
+              <FormItem
+                className='form__item'
+                name='firstname'
+                label='First Name'
+                required={true}
+              >
+                <Input name='firstname' placeholder='Enter your First Name' />
+              </FormItem>
+              <FormItem
+                className='form__item'
+                name='lastname'
+                label='Last Name'
+                required={true}
+              >
+                <Input name='lastname' placeholder='Enter your Last Name' />
+              </FormItem>
+              <FormItem
+                className='form__item'
+                name='email'
+                label='Email'
+                required={true}
+                hasFeedback={true}
+                showValidateSuccess={true}
+              >
+                <Input name='email' placeholder='Enter your Email' />
+              </FormItem>
+              <FormItem
+                className='form__item'
+                name='password'
+                label='Password'
+                required={true}
+                hasFeedback={true}
+                showValidateSuccess={true}
+              >
+                <Input.Password name='password' placeholder='Enter your password' />
+              </FormItem>
+              <FormItem
+                className='form__item'
+                name='confirmPassword'
+                label='Confirm'
+                required={true}
+                hasFeedback={true}
+                showValidateSuccess={true}
+              >
+                <Input.Password name='confirmPassword' placeholder='Confirm your password' />
+              </FormItem>
+              {formError && (
+                <label>
+                  <p className='form__item form__error'>
+                    {formError}
+                  </p>
+                </label>
+              )}
+              <SubmitButton className='register-form-button'>Submit</SubmitButton>
+            </Form>
+          </div>
+        )}
+      </Formik>
+    );
+  };
 };
 
 export default RegisterPage;

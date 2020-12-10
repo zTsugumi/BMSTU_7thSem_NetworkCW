@@ -1,13 +1,18 @@
 import {
-  SIGNUP_SUCCESS, SIGNUP_FAILURE,
-  SIGNIN_SUCCESS, SIGNIN_FAILURE,
-  SIGNOUT_SUCCESS, SIGNOUT_FAILURE,
-  //AUTH_USER
-  AUTH_SUCCESS, AUTH_FAILURE,
+  SIGNUP_REQUEST, SIGNUP_SUCCESS, SIGNUP_FAILURE,
+  SIGNIN_REQUEST, SIGNIN_SUCCESS, SIGNIN_FAILURE,
+  SIGNOUT_REQUEST, SIGNOUT_SUCCESS, SIGNOUT_FAILURE,
+  AUTH_REQUEST, AUTH_SUCCESS, AUTH_FAILURE,
 } from './allTypes';
 import { SERVER_USER } from '../../shared/config';
 
 /****************************************** SIGNUP ******************************************/
+const signupRequest = () => {
+  return {
+    type: SIGNUP_REQUEST
+  }
+}
+
 const signupSuccess = () => {
   return {
     type: SIGNUP_SUCCESS
@@ -21,7 +26,9 @@ const signupError = (message) => {
   }
 }
 
-const signupUser = (creds) => async (dispatch) => {
+const signupUser = (creds) => (dispatch) => {
+  dispatch(signupRequest());
+
   return fetch(`${SERVER_USER}/signup`, {
     method: 'POST',
     headers: {
@@ -54,6 +61,12 @@ const signupUser = (creds) => async (dispatch) => {
 };
 
 /****************************************** SIGNIN ******************************************/
+const signinRequest = () => {
+  return {
+    type: SIGNIN_REQUEST
+  }
+}
+
 const signinSuccess = () => {
   return {
     type: SIGNIN_SUCCESS
@@ -68,6 +81,8 @@ const signinError = (message) => {
 }
 
 const signinUser = (creds) => (dispatch) => {
+  dispatch(signinRequest());
+
   return fetch(`${SERVER_USER}/signin`, {
     method: 'POST',
     credentials: 'include',
@@ -103,6 +118,12 @@ const signinUser = (creds) => (dispatch) => {
 };
 
 /****************************************** SIGNOUT *****************************************/
+const signoutRequest = () => {
+  return {
+    type: SIGNOUT_REQUEST
+  }
+}
+
 const signoutSuccess = () => {
   return {
     type: SIGNOUT_SUCCESS
@@ -117,6 +138,8 @@ const signoutError = (message) => {
 }
 
 const signoutUser = () => (dispatch) => {
+  dispatch(signoutRequest());
+
   return fetch(`${SERVER_USER}/signout`, {
     method: 'GET',
     credentials: 'include',
@@ -136,6 +159,12 @@ const signoutUser = () => (dispatch) => {
 }
 
 /******************************************* AUTH *******************************************/
+const authRequest = () => {
+  return {
+    type: AUTH_REQUEST
+  }
+}
+
 const authSuccess = (creds) => {
   return {
     type: AUTH_SUCCESS,
@@ -151,14 +180,15 @@ const authError = (message) => {
 }
 
 const authUser = () => (dispatch) => {
-  const timeout = 1000;
-  const controller = new AbortController();
-  setTimeout(() => controller.abort(), timeout);
+  // const timeout = 1000;
+  // const controller = new AbortController();
+  // setTimeout(() => controller.abort(), timeout);
+  dispatch(authRequest());
 
   return fetch(`${SERVER_USER}/auth`, {
     method: 'GET',
     credentials: 'include',
-    signal: controller.signal
+    //signal: controller.signal
   })
     .then(
       response => {

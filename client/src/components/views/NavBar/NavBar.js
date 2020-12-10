@@ -26,7 +26,7 @@ function NavBar(props) {
           <LeftMenu mode='horizontal' />
         </div>
         <div className='menu_right'>
-          <RightMenu mode='horizontal' users={props.users} />
+          <RightMenu mode='horizontal' users={props.users} signoutUser={props.signoutUser} />
         </div>
         <Button
           className='menu__mobile-button'
@@ -44,7 +44,7 @@ function NavBar(props) {
           visible={visible}
         >
           <LeftMenu mode='inline' />
-          <RightMenu mode='inline' users={props.users} />
+          <RightMenu mode='inline' users={props.users} signoutUser={props.signoutUser} />
         </Drawer>
       </div>
     </nav>

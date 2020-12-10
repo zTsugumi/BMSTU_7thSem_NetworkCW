@@ -13,7 +13,7 @@ async function findAll(req, res) {
   };
 }
 
-// WIP: email verification
+// WIP: email verification, slow
 async function signup(req, res) {
   try {
     const body = await utils.bodyParser(req);
@@ -41,7 +41,6 @@ async function signup(req, res) {
   };
 }
 
-// WIP: if possible, change this callback hell to promise
 async function signin(req, res) {
   try {
     const body = await utils.bodyParser(req);
@@ -99,6 +98,7 @@ async function signout(req, res) {
   }
 }
 
+// WIP: auth slow on unauthorized login
 async function auth(req, res) {
   try {
     const cookies = await utils.cookiesParser(req);
