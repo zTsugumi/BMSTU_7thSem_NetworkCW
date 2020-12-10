@@ -2,6 +2,7 @@ import {
   SIGNUP_SUCCESS, SIGNUP_FAILURE,
   SIGNIN_SUCCESS, SIGNIN_FAILURE,
   SIGNOUT_SUCCESS, SIGNOUT_FAILURE,
+  //AUTH_USER
   AUTH_SUCCESS, AUTH_FAILURE,
 } from './allTypes';
 import { SERVER_USER } from '../../shared/config';
@@ -37,9 +38,6 @@ const signupUser = (creds) => async (dispatch) => {
           error.response = response;
           throw error;
         }
-      },
-      error => {
-        throw error;
       })
     .then(response => response.json())
     .then(response => {
@@ -88,9 +86,6 @@ const signinUser = (creds) => (dispatch) => {
           error.response = response;
           throw error;
         }
-      },
-      error => {
-        throw error;
       })
     .then(response => response.json())
     .then(response => {
@@ -122,35 +117,21 @@ const signoutError = (message) => {
 }
 
 const signoutUser = () => (dispatch) => {
-  localStorage.removeItem('token');
-  localStorage.removeItem('creds');
-  localStorage.removeItem('isAdmin');
-
-  return fetch(`${SERVER_USER}/signout`)
+  return fetch(`${SERVER_USER}/signout`, {
+    method: 'GET',
+    credentials: 'include',
+  })
     .then(
       response => {
         if (response.ok) {
-          return response;
+          dispatch(signoutSuccess(response));
         } else {
           var error = new Error('Error ' + response.status + ': ' + response.statusText);
           error.response = response;
           throw error;
         }
-      },
-      error => {
-        throw error;
       })
-    .then(response => response.json())
-    .then(response => {
-      if (response.success) {
-        dispatch(signoutSuccess(response));
-      }
-      else {
-        var error = new Error('Error ' + response.status);
-        error.response = response;
-        throw error;
-      }
-    })
+    .then(() => dispatch(authUser()))
     .catch(error => dispatch(signoutError(error.message)));
 }
 
@@ -158,7 +139,7 @@ const signoutUser = () => (dispatch) => {
 const authSuccess = (creds) => {
   return {
     type: AUTH_SUCCESS,
-    payload: creds.isAdmin
+    payload: creds
   }
 }
 
@@ -170,7 +151,15 @@ const authError = (message) => {
 }
 
 const authUser = () => (dispatch) => {
-  return fetch(`${SERVER_USER}/auth`)
+  const timeout = 1000;
+  const controller = new AbortController();
+  setTimeout(() => controller.abort(), timeout);
+
+  return fetch(`${SERVER_USER}/auth`, {
+    method: 'GET',
+    credentials: 'include',
+    signal: controller.signal
+  })
     .then(
       response => {
         if (response.ok) {
@@ -180,11 +169,7 @@ const authUser = () => (dispatch) => {
           error.response = response;
           throw error;
         }
-      },
-      error => {
-        throw error;
-      }
-    )
+      })
     .then(response => response.json())
     .then(response => {
       if (response.success) {

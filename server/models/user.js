@@ -53,7 +53,7 @@ UserSchema.methods.generateToken = function (callback) {
   this.token = jwt.sign(
     { _id: this._id },
     config.secretKey,
-    { expiresIn: '1d' });
+    { expiresIn: config.jwtExpiration });
   this.save((err, user) => {
     if (err) return callback(err);
     callback(null, user);

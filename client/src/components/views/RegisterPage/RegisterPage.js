@@ -38,7 +38,7 @@ function RegisterPage(props) {
     return () => {
       setFormError('');
     }
-  }, [userState, props]);
+  }, [props.history, userState]);
 
   const signupValidationSchema = Yup.object().shape({
     firstname: Yup.string()

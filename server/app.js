@@ -77,6 +77,16 @@ var server = http.createServer((req, res) => {
 
       case "/api/users/signout":
         // WIP
+        switch (req.method) {
+          case 'OPTIONS':
+            utils.sendJsonResponse(res, 204, '');
+            break;
+          case 'GET':
+            userCtrl.signout(req, res);
+            break;
+          default:
+            utils.sendJsonResponse(res, 501, { err: "Not implemented" });
+        }
         break;
 
       case "/api/users/auth":

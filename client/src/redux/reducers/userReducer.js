@@ -1,13 +1,11 @@
 import {
   SIGNUP_SUCCESS, SIGNUP_FAILURE,
   SIGNIN_SUCCESS, SIGNIN_FAILURE,
-  SIGNOUT_SUCCESS, SIGNOUT_FAILURE,
+  SIGNOUT_SUCCESS, SIGNOUT_FAILURE, //AUTH_USER,
   AUTH_SUCCESS, AUTH_FAILURE,
 } from '../actions/allTypes';
 
 const users = (state = {
-  isAuth: false,
-  isAdmin: false,
   creds: null,
   errMess: null,
   regSuccess: null,
@@ -17,8 +15,6 @@ const users = (state = {
     case SIGNUP_SUCCESS:
       return {
         ...state,
-        isAuth: false,
-        isAdmin: false,
         creds: null,
         regSuccess: true,
         logSuccess: null,
@@ -27,8 +23,6 @@ const users = (state = {
     case SIGNUP_FAILURE:
       return {
         ...state,
-        isAuth: false,
-        isAdmin: false,
         creds: null,
         regSuccess: false,
         logSuccess: null,
@@ -38,8 +32,6 @@ const users = (state = {
     case SIGNIN_SUCCESS:
       return {
         ...state,
-        isAuth: false,
-        isAdmin: false,
         creds: null,
         regSuccess: null,
         logSuccess: true,
@@ -48,8 +40,6 @@ const users = (state = {
     case SIGNIN_FAILURE:
       return {
         ...state,
-        isAuth: false,
-        isAdmin: false,
         creds: null,
         regSuccess: null,
         logSuccess: false,
@@ -57,16 +47,26 @@ const users = (state = {
       };
 
     case SIGNOUT_SUCCESS:
-      return { ...state, };
+      return {
+        ...state,
+        creds: null,
+        regSuccess: null,
+        logSuccess: null,
+        errMess: null
+      };
     case SIGNOUT_FAILURE:
-      return { ...state, signoutFail: action.payload };
+      return {
+        ...state,
+        creds: null,
+        regSuccess: null,
+        logSuccess: null,
+        errMess: action.payload
+      };
 
     case AUTH_SUCCESS:
       return {
         ...state,
-        isAuth: true,
-        isAdmin: action.payload,
-        creds: null,
+        creds: action.payload,
         regSuccess: null,
         logSuccess: null,
         errMess: null
@@ -74,9 +74,7 @@ const users = (state = {
     case AUTH_FAILURE:
       return {
         ...state,
-        isAuth: false,
-        isAdmin: false,
-        creds: null,
+        creds: false,
         regSuccess: null,
         logSuccess: null,
         errMess: action.payload

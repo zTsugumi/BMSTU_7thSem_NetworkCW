@@ -15,11 +15,26 @@ function findByToken(token, callback) {
   jwt.verify(token, config.secretKey, (err, decode) => {
     if (err) return callback(err);
 
-    User.findOne({ "_id": decode, "token": token }, (err, user) => {
+    const filter = { "_id": decode._id, "token": token };
+
+    User.findOne(filter, (err, user) => {
       if (err) return callback(err);
       callback(null, user);
     })
   })
+}
+
+async function updateByToken(token, update, callback) {
+  jwt.verify(token, config.secretKey, (err, decode) => {
+    if (err) return callback(err);
+
+    const filter = { "_id": decode._id, "token": token };
+
+    User.findOneAndUpdate(filter, update, { new: true }, (err, user) => {
+      if (err) return callback(err);
+      callback(null, user);
+    });
+  });
 }
 
 function create(creds) {
@@ -40,5 +55,6 @@ module.exports = {
   findAll,
   findOne,
   findByToken,
+  updateByToken,
   create,
 }

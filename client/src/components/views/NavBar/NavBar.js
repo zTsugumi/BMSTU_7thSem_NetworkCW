@@ -5,7 +5,7 @@ import './Navbar.css';
 import LeftMenu from './Sections/LeftMenu';
 import RightMenu from './Sections/RightMenu';
 
-function NavBar() {
+function NavBar(props) {
   const [visible, setVisible] = useState(false)
 
   const showDrawer = () => {
@@ -26,7 +26,7 @@ function NavBar() {
           <LeftMenu mode='horizontal' />
         </div>
         <div className='menu_right'>
-          <RightMenu mode='horizontal' />
+          <RightMenu mode='horizontal' users={props.users} />
         </div>
         <Button
           className='menu__mobile-button'
@@ -44,7 +44,7 @@ function NavBar() {
           visible={visible}
         >
           <LeftMenu mode='inline' />
-          <RightMenu mode='inline' />
+          <RightMenu mode='inline' users={props.users} />
         </Drawer>
       </div>
     </nav>

@@ -51,7 +51,7 @@ function LoginPage(props) {
     else if (userState.logSuccess === false) {
       setFormError("Sorry, we couldn't login your account. Please check your information again!");
     }
-  }, [props, userState, rememberMe, rememberData]);
+  }, [props.history, userState, rememberMe, rememberData]);
 
   const signinValidationSchema = Yup.object().shape({
     email: Yup.string()

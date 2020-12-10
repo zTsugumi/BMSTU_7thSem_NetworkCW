@@ -1,11 +1,10 @@
 const UserRepo = require('../repo/userRepo');
 const utils = require('../helpers/utils');
-const auths = require('../helpers/auth');
 
 // WIP: admin verification
 async function findAll(req, res) {
   try {
-    await UserRepo.findAll()
+    UserRepo.findAll()
       .then((users) => utils.sendJsonResponse(res, 200, users))
       .catch((err) => utils.sendJsonResponse(res, 500, err));
   }
@@ -26,7 +25,7 @@ async function signup(req, res) {
       role: body.role,
     }
 
-    await UserRepo.create(newUser)
+    UserRepo.create(newUser)
       .then(
         (user) => {
           //sendEmail(user.email, user.name, null, "welcome");
@@ -46,7 +45,7 @@ async function signup(req, res) {
 async function signin(req, res) {
   try {
     const body = await utils.bodyParser(req);
-    await UserRepo.findOne({ email: body.email })
+    UserRepo.findOne({ email: body.email })
       .then(
         (user) => {         // Mongoose always return something, even null
           if (user) {
@@ -77,23 +76,48 @@ async function signin(req, res) {
   }
 }
 
+async function signout(req, res) {
+  try {
+    const cookies = await utils.cookiesParser(req);
+    const token = cookies.w_auth;
+
+    UserRepo.updateByToken(token, { token: "", tokenExp: "" }, (err, user) => {
+      if (user) {
+        const cookies = [
+          `w_authExp=`,
+          `w_auth=`
+        ];
+        utils.sendJsonResponse(res, 204, { success: true }, cookies);
+      }
+      else {
+        utils.sendJsonResponse(res, 500, { success: false, err: 'Logout failed' });
+      }
+    });
+  }
+  catch (err) {
+    console.log(err);
+  }
+}
+
 async function auth(req, res) {
   try {
-    await auths.auth(req, res)
-      .then(
-        (user) => {
-          utils.sendJsonResponse(res, 200, {
-            success: true,
-            isAdmin: user.role === 0 ? false : true,
-            email: user.email,
-            firstname: user.name,
-            lastname: user.lastname,
-            role: user.role,
-            image: user.image,
-          });
-        }
-      )
-      .catch((err) => utils.sendJsonResponse(res, 401, { success: false, message: "Auth failed" }));
+    const cookies = await utils.cookiesParser(req);
+    const token = cookies.w_auth;
+
+    UserRepo.findByToken(token, (err, user) => {
+      if (user)
+        utils.sendJsonResponse(res, 200, {
+          success: true,
+          isAdmin: user.role === 0 ? false : true,
+          email: user.email,
+          firstname: user.firstname,
+          lastname: user.lastname,
+          role: user.role,
+          image: user.image,
+        })
+      else
+        utils.sendJsonResponse(res, 401, { success: false, message: "Auth failed" });
+    });
   }
   catch (err) {
     console.log(err);
@@ -104,5 +128,6 @@ module.exports = {
   findAll,
   signup,
   signin,
+  signout,
   auth
 }

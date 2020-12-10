@@ -6,7 +6,7 @@ function sendJsonResponse(res, status, content, cookies = null) {
   res.setHeader('Content-Length', JSON.stringify(content).length);
 
   const cookiesOpts = {
-    expires: new Date(Date.now() + config.cookiesExpiration),
+    expires: new Date(Date.now() + config.cookiesExpiration * 24 * 60 * 60 * 1000),
     secure: false,    // set to true if using https
     httpOnly: true,
     path: '/'
@@ -49,7 +49,7 @@ function cookiesSetter(res, content, opts) {
         if (opts.httpOnly) {
           content += '; HttpOnly';
         }
-        if (opts.path){
+        if (opts.path) {
           content += `; Path=${opts.path}`;
         }
       }
