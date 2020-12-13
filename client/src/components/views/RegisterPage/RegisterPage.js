@@ -24,20 +24,20 @@ const formItemLayout = {
 function RegisterPage(props) {
   const [formError, setFormError] = useState('');
   const history = useHistory();
-  const { users, signupUser } = props;
+  const { user, signupUser } = props;
 
   useEffect(() => {
-    if (users.regSuccess === true) {
+    if (user.regSuccess === true) {
       history.push('/signin');
     }
-    else if (users.regSuccess === false) {
+    else if (user.regSuccess === false) {
       setFormError("Sorry, we couldn't register your account. Please check your information again!");
     }
 
     return () => {
       setFormError('');
     }
-  }, [users.regSuccess, history]);
+  }, [user.regSuccess, history]);
 
   const signupValidationSchema = Yup.object().shape({
     firstname: Yup.string()
@@ -71,7 +71,7 @@ function RegisterPage(props) {
     actions.setSubmitting(false);
   }
 
-  if (users.isLoading) {
+  if (user.isLoading) {
     return (
       <div className='app'>
         <Loading />

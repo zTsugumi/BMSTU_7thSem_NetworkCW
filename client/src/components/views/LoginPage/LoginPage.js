@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { withRouter, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { Formik } from 'formik';
 import { Typography } from 'antd';
 import { Form, FormItem, Input, SubmitButton, Checkbox } from 'formik-antd';
@@ -15,7 +15,7 @@ function LoginPage(props) {
   const [rememberMe, setRememberMe] = useState(false);
 
   const history = useHistory();
-  const { users, signinUser } = props;
+  const { user, signinUser } = props;
 
   // Run only 1 time after render
   useEffect(() => {
@@ -26,17 +26,17 @@ function LoginPage(props) {
 
   // Effect for login success reroute to main page
   useEffect(() => {
-    if (users.logSuccess === true) {
+    if (user.logSuccess === true) {
       history.push('/');
     }
-    else if (users.logSuccess === false) {
+    else if (user.logSuccess === false) {
       setFormError("Sorry, we couldn't login your account. Please check your information again!");
     }
 
     return () => {
       setFormError('');
     }
-  }, [users.logSuccess, history]);
+  }, [user.logSuccess, history]);
 
   const signinValidationSchema = Yup.object().shape({
     email: Yup.string()
@@ -67,7 +67,7 @@ function LoginPage(props) {
     actions.setSubmitting(false);
   }
 
-  if (users.isLoading) {
+  if (user.isLoading) {
     return (
       <div className='app'>
         <Loading />
@@ -145,4 +145,4 @@ function LoginPage(props) {
   }
 };
 
-export default withRouter(LoginPage);
+export default LoginPage;

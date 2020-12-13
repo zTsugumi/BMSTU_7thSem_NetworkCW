@@ -1,11 +1,12 @@
 const http = require('http');
 const mongoose = require('mongoose');
+const socket = require('socket.io');
 const morgan = require('morgan');
 const config = require('./config/key');
 const utils = require('./helpers/utils');
 const cors = require('./helpers/cors');
 const userCtrl = require('./controllers/userCtrl');
-
+const chatCtrl = require('./controllers/chatCtrl');
 
 /**
  * Connect to mongodb through mongoose
@@ -30,11 +31,10 @@ var server = http.createServer((req, res) => {
     cors.corsWithOptions(req, res);
 
     switch (req.url) {
-      case "/api/users":
+      case '/api/users':
         switch (req.method) {
           case 'OPTIONS':
             // WIP
-            cors.cors(req, res);
             utils.sendJsonResponse(res, 204, '');
             break;
           case 'GET':
@@ -42,11 +42,11 @@ var server = http.createServer((req, res) => {
             userCtrl.findAll(req, res);
             break;
           default:
-            utils.sendJsonResponse(res, 501, { err: "Not implemented" });
+            utils.sendJsonResponse(res, 501, { err: 'Not implemented' });
         }
         break;
 
-      case "/api/users/signup":
+      case '/api/users/signup':
         switch (req.method) {
           case 'OPTIONS':
             // WIP
@@ -57,11 +57,11 @@ var server = http.createServer((req, res) => {
             userCtrl.signup(req, res);
             break;
           default:
-            utils.sendJsonResponse(res, 501, { err: "Not implemented" });
+            utils.sendJsonResponse(res, 501, { err: 'Not implemented' });
         }
         break;
 
-      case "/api/users/signin":
+      case '/api/users/signin':
         switch (req.method) {
           case 'OPTIONS':
             // WIP
@@ -71,11 +71,11 @@ var server = http.createServer((req, res) => {
             userCtrl.signin(req, res);
             break;
           default:
-            utils.sendJsonResponse(res, 501, { err: "Not implemented" });
+            utils.sendJsonResponse(res, 501, { err: 'Not implemented' });
         }
         break;
 
-      case "/api/users/signout":
+      case '/api/users/signout':
         // WIP
         switch (req.method) {
           case 'OPTIONS':
@@ -85,11 +85,11 @@ var server = http.createServer((req, res) => {
             userCtrl.signout(req, res);
             break;
           default:
-            utils.sendJsonResponse(res, 501, { err: "Not implemented" });
+            utils.sendJsonResponse(res, 501, { err: 'Not implemented' });
         }
         break;
 
-      case "/api/users/auth":
+      case '/api/users/auth':
         switch (req.method) {
           case 'OPTIONS':
             utils.sendJsonResponse(res, 204, '');
@@ -98,12 +98,25 @@ var server = http.createServer((req, res) => {
             userCtrl.auth(req, res);
             break;
           default:
-            utils.sendJsonResponse(res, 501, { err: "Not implemented" });
+            utils.sendJsonResponse(res, 501, { err: 'Not implemented' });
+        }
+        break;
+
+      case '/api/chat':
+        switch (req.method) {
+          case 'OPTIONS':
+            utils.sendJsonResponse(res, 204, '');
+            break;
+          case 'GET':
+            chatCtrl.findAll(req, res);
+            break;
+          default:
+            utils.sendJsonResponse(res, 501, { err: 'Not implemented' });
         }
         break;
 
       default:
-        utils.sendJsonResponse(res, 404, "Resource not found");
+        utils.sendJsonResponse(res, 404, 'Resource not found');
     }
   })
 })
@@ -113,6 +126,29 @@ var server = http.createServer((req, res) => {
  */
 server.listen({ host: config.hostname, port: config.port }, () => {
   console.log(`Server running on http://${config.hostname}:${config.port}`);
+});
+
+/**
+ * Create WebSocket server for chat interacting
+ */
+const io = socket(server, {
+  cors: {
+    origin: `http://${config.hostname}:${config.clientPort}`,
+    methods: ['GET', 'POST']
+  }
+});
+io.on('connection', socket => {
+  socket.on('client to server',
+    msg => {
+      chatCtrl.insert(msg)
+        .then(
+          (newMsg) => {
+            socket.emit('server to client', newMsg);
+          }
+        )
+        .catch(err => socket.emit('server error', err));
+      ;
+    });
 });
 
 module.exports = server;

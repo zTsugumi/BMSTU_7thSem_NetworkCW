@@ -1,20 +1,21 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState, useEffect } from 'react';
 import { Menu } from 'antd';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import { Loading } from '../../Loading/Loading';
 
 function RightMenu(props) {
-  const [formLoading, setFormLoading] = useState(props.users.isLoading);
+  const { user, signoutUser } = props;
+  const [formLoading, setFormLoading] = useState(user.isLoading);
 
   // Effect for loading
   useEffect(() => {
-    setFormLoading(props.users.isLoading);
+    setFormLoading(user.isLoading);
 
     return (() => {
-      setFormLoading(props.users.isLoading);
+      setFormLoading(user.isLoading);
     });
-  }, [props.users.isLoading]);
+  }, [user.isLoading]);
 
   if (formLoading) {
     return (
@@ -26,11 +27,11 @@ function RightMenu(props) {
     )
   }
   else {
-    if (props.users.creds) {
+    if (user.creds) {
       return (
         <Menu mode={props.mode}>
           <Menu.Item key='logout'>
-            <a onClick={() => props.signoutUser()}>Sign out</a>
+            <a onClick={() => signoutUser()}>Sign out</a>
           </Menu.Item>
         </Menu>
       )
@@ -39,10 +40,10 @@ function RightMenu(props) {
       return (
         <Menu mode={props.mode}>
           <Menu.Item key='mail'>
-            <a href='/signin'>Sign in</a>
+            <Link to='/signin'>Sign in</Link>
           </Menu.Item>
           <Menu.Item key='app'>
-            <a href='/signup'>Sign up</a>
+            <Link to='/signup'>Sign up</Link>
           </Menu.Item>
         </Menu>
       )

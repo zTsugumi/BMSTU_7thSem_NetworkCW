@@ -23,6 +23,7 @@ async function signup(req, res) {
       firstname: body.firstname,
       lastname: body.lastname,
       role: body.role,
+      image: body.image
     }
 
     UserRepo.create(newUser)

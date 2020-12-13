@@ -154,7 +154,6 @@ const signoutUser = () => (dispatch) => {
           throw error;
         }
       })
-    .then(() => dispatch(authUser()))
     .catch(error => dispatch(signoutError(error.message)));
 }
 
