@@ -1,0 +1,31 @@
+version: "3"
+
+services:
+  server:
+    build: ./server
+    expose:
+      - ${SERVER_PORT}
+      - ${SERVER_SECPORT}
+    environment:
+      API_HOST: ${API_HOST}
+      SERVER_PORT: ${SERVER_PORT}
+      SERVER_SECPORT: ${SERVER_SECPORT}
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}
+      - ${SERVER_SECPORT}:${SERVER_SECPORT}
+    volumes:
+      - ./server:/app/server
+
+  client:
+    build: ./client
+    expose:
+      - ${REACT_PORT}
+    environment:
+      API_HOST: ${API_HOST}
+      REACT_PORT: ${REACT_PORT}
+    ports:
+      - ${REACT_PORT}:${REACT_PORT}
+    volumes:
+      - ./client:/app/client
+    links:
+      - server

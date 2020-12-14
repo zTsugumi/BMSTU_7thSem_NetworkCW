@@ -1,2 +1,8 @@
 dev.js
 node_modules
+build
+server/upload
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

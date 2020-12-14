@@ -1,18 +1,27 @@
-const cors = require('cors');
+function cors(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Request-Method', 'X-Requested-With');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With');
+  res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, PUT, POST, DELETE');
+}
 
-const whitelist = ['http://localhost:3001', 'https://localhost:3443', 'http://192.168.56.1:3001'];
-var corsOptionsDelegate = (req, callback) => {
-    var corsOptions;
+function corsWithOptions(req, res) {
+  const whitelist = ['http://localhost:3001'];
 
-    // If the incoming request is in whitelist
-    if (whitelist.indexOf(req.header('Origin')) !== -1) {
-        corsOptions = { origin: true };
-    }
-    else {
-        corsOptions = { origin: false };
-    }
-    callback(null, corsOptions);
+  if (whitelist.indexOf(req.headers.origin) !== -1) {
+    res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
+  }
+  else {
+    res.setHeader('Access-Control-Allow-Origin', null);
+  }
+
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Request-Method', 'X-Requested-With');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With');
+  res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, PUT, POST, DELETE');
+}
+
+module.exports = {
+  cors,
+  corsWithOptions
 };
-
-exports.cors = cors();
-exports.corsWithOptions = cors(corsOptionsDelegate);

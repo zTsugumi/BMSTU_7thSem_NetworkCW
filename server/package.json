@@ -1,0 +1,24 @@
+{
+  "name": "chat-app-server",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "bcrypt": "^5.0.0",
+    "debug": "^4.3.1",
+    "formidable": "^1.2.2",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.10.15",
+    "morgan": "^1.10.0",
+    "socket.io": "^3.0.4"
+  },
+  "devDependencies": {
+    "concurrently": "^5.3.0",
+    "nodemon": "^2.0.6"
+  },
+  "scripts": {
+    "dev": "SET NODE_ENV=development&&nodemon app",
+    "start": "NODE_ENV=production node app"
+  },
+  "author": "zTsugumi",
+  "license": "ISC"
+}
