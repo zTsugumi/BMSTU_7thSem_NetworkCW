@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Typography, Row, Col, Input, Button } from 'antd';
 import { MessageOutlined, UploadOutlined, EnterOutlined } from '@ant-design/icons';
 import moment from 'moment';
@@ -6,29 +6,18 @@ import Dropzone from 'react-dropzone';
 import ChatCard from './Sections/ChatCard';
 import './ChatPage.css';
 
+import { SERVER_CHAT } from '../../../shared/config';
+
 const { Title } = Typography;
 
 function ChatPage(props) {
   const [chatMessage, setChatMessage] = useState('');
-  const { user, chats, chatPost, socket } = props;
-  let mounted = useRef();
+  const { user, chat, ws } = props;
   let messageEnd = useRef();
 
   useEffect(() => {
-    if (!mounted.current) {   // do componentDidMount logic
-      mounted.current = true;
-
-      socket.on("server to client", msgFromServer => {
-        chatPost(msgFromServer);
-      });
-    }
-  });
-
-  useEffect(() => {
     if (messageEnd.current)
-      messageEnd.current.scrollIntoView({
-        behavior: "smooth"
-      });
+      messageEnd.current.scrollIntoView({});
   }, [messageEnd]);
 
   const handleSubmitChat = () => {
@@ -43,54 +32,60 @@ function ChatPage(props) {
       type: "Text"
     }
 
-    socket.emit("client to server", message);
+    ws.sendMessage(message);
 
     setChatMessage('');
   }
 
   const handleOnDrop = (files) => {
-    console.log(files);
-
     if (!user.creds) {
       return alert('Please Log in first');
     }
 
-    // let formData = new FormData;
+    var formData = new FormData();
+    formData.append("file", files[0]);
+    fetch(`${SERVER_CHAT}/upload`, {
+      method: 'POST',
+      body: formData
+    })
+      .then(
+        response => {
+          if (response.ok) {
+            return response;
+          } else {
+            var error = new Error('Error ' + response.status + ': ' + response.statusText);
+            error.response = response;
+            throw error;
+          }
+        })
+      .then(response => response.json())
+      .then(response => {
+        if (response.success) {
+          // Send new image/video to all clients
+          var newFile = {
+            content: response.url,
+            user: user.creds,
+            atTime: moment(),
+            type: "VideoImage"
+          }
 
-    // const config = {
-    //   header: { 'content-type': 'multipart/form-data' }
-    // }
-
-    // formData.append("file", files[0])
-
-    // Axios.post('api/chat/uploadfiles', formData, config)
-    //   .then(response => {
-    //     if (response.data.success) {
-    //       let chatMessage = response.data.url;
-    //       let userId = this.props.user.userData._id
-    //       let userName = this.props.user.userData.name;
-    //       let userImage = this.props.user.userData.image;
-    //       let nowTime = moment();
-    //       let type = "VideoOrImage"
-
-    //       this.socket.emit("Input Chat Message", {
-    //         chatMessage,
-    //         userId,
-    //         userName,
-    //         userImage,
-    //         nowTime,
-    //         type
-    //       });
-    //     }
-    //   })
+          ws.sendMessage(newFile);
+        }
+        else {
+          var error = new Error('Error ' + response.status);
+          error.response = response;
+          throw error;
+        }
+      })
+      .catch(error => console.log(error));
   }
 
   return (
     <div className='app'>
       <Title level={2}>Real Time Chat</Title>
       <Row className='chatbox'>
-        {(chats && chats.chats)
-          ? chats.chats.map(
+        {(chat && chat.chats)
+          ? chat.chats.map(
             (chat) => (
               <ChatCard key={chat._id}  {...chat} />
             ))
@@ -134,7 +129,6 @@ function ChatPage(props) {
       </Row>
     </div>
   );
-
 }
 
 export default ChatPage;

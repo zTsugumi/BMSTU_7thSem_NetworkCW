@@ -3,9 +3,9 @@ import {
   CHAT_POST
 } from '../actions/allTypes';
 
-const chats = (state = {
+const chat = (state = {
   isLoading: true,
-  chats: null,
+  chats: [],
 }, action) => {
   switch (action.type) {
     case CHAT_REQUEST:
@@ -37,4 +37,4 @@ const chats = (state = {
   }
 }
 
-export default chats;
+export default chat;

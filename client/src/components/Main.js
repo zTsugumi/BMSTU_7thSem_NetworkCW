@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect } from 'react';
+import React, { Suspense, useContext, useEffect } from 'react';
 import { Route, Switch, withRouter, Redirect } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import NavBar from './views/NavBar/NavBar';
@@ -8,18 +8,16 @@ import LoginPage from './views/LoginPage/LoginPage';
 import RegisterPage from './views/RegisterPage/RegisterPage';
 import ChatPage from './views/ChatPage/ChatPage';
 import AllActions from '../redux/actions/allActions';
-import io from 'socket.io-client';
-import { SERVER } from '../shared/config';
+import WebSocketContext from '../socket/WebSocketContext';
 
 function Main() {
   const dispatch = useDispatch();
   const user = useSelector(state => state.user);
-  const chats = useSelector(state => state.chat);
+  const chat = useSelector(state => state.chat);
 
   const signinUser = (creds) => dispatch(AllActions.UserActions.signinUser(creds));
   const signupUser = (creds) => dispatch(AllActions.UserActions.signupUser(creds));
   const signoutUser = () => dispatch(AllActions.UserActions.signoutUser());
-  const chatPost = (msg) => dispatch(AllActions.ChatActions.chatPost(msg));
 
   useEffect(() => {
     dispatch(AllActions.UserActions.authUser());
@@ -40,7 +38,8 @@ function Main() {
     );
   }
 
-  const socket = io(SERVER);
+  const ws = useContext(WebSocketContext);
+
   return (
     <Suspense fallback={(<div>Loading...</div>)}>
       <NavBar user={user} signoutUser={signoutUser} />
@@ -52,8 +51,7 @@ function Main() {
           <AuthRoute exact path='/signup' component={() =>
             <RegisterPage user={user} signupUser={signupUser} />} />
           <Route exact path="/chat" component={() =>
-            <ChatPage user={user} chats={chats}
-              chatPost={chatPost} socket={socket} />} />
+            <ChatPage user={user} chat={chat} ws={ws} />} />
         </Switch>
       </div>
       <Footer />

@@ -1,7 +1,45 @@
-import React from "react";
+import React from 'react';
 import moment from 'moment';
 import { Comment, Tooltip, Avatar } from 'antd';
 import { SERVER } from '../../../../shared/config';
+
+function RenderFile({ message }) {
+  var ext = message.substring(message.length - 3, message.length);
+
+  if (message.substring(0, 7) === 'upload\\') {
+    switch (ext) {
+      case 'mkv':
+      case 'mp4':
+        return (
+          <video
+            style={{ maxWidth: '50%' }}
+            src={`${SERVER}/${message}`}
+            alt='video' type='video/mp4' controls
+          />
+        );
+      case 'png':
+      case 'jpg':
+        console.log('sdfsdfsdf')
+        return (
+          <img
+            style={{ maxWidth: '50%' }}
+            src={`${SERVER}/${message}`} alt='img'
+          />
+        );
+      default:
+        return (
+          <a href={`${SERVER}/${message}`}>{message.slice(7 - message.length)}</a>
+        );
+    }
+  }
+  else {
+    return (
+      <p>
+        {message}
+      </p>
+    )
+  }
+}
 
 function ChatCard(props) {
   const { sender, message, atTime } = props;
@@ -15,25 +53,7 @@ function ChatCard(props) {
             src={sender.image} alt={sender.name}
           />
         }
-        content={
-          message.substring(0, 8) === "uploads/" ?      // video or image           
-            message.substring(message.length - 3, message.length) === 'mp4' ?
-              <video
-                style={{ maxWidth: '200px' }}
-                src={`${SERVER}/${message}`} alt="video"
-                type="video/mp4" controls
-              />
-              :
-              <img
-                style={{ maxWidth: '200px' }}
-                src={`http://localhost:5000/${message}`}
-                alt="img"
-              />
-            :
-            <p>
-              {message}
-            </p>
-        }
+        content={<RenderFile message={message} />}
         datetime={
           <Tooltip title={moment(atTime).format('YYYY-MM-DD HH:mm:ss')}>
             <span>{moment(atTime).fromNow()}</span>

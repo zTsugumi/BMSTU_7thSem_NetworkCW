@@ -1,5 +1,8 @@
 const http = require('http');
 const mongoose = require('mongoose');
+const fs = require('fs');
+//const multer = require('multer')
+const formidable = require('formidable');
 const socket = require('socket.io');
 const morgan = require('morgan');
 const config = require('./config/key');
@@ -76,7 +79,6 @@ var server = http.createServer((req, res) => {
         break;
 
       case '/api/users/signout':
-        // WIP
         switch (req.method) {
           case 'OPTIONS':
             utils.sendJsonResponse(res, 204, '');
@@ -115,18 +117,42 @@ var server = http.createServer((req, res) => {
         }
         break;
 
+      case '/api/chat/upload':
+        switch (req.method) {
+          case 'OPTIONS':
+            utils.sendJsonResponse(res, 204, '');
+            break;
+          case 'POST':
+            var form = new formidable.IncomingForm();
+            //form.uploadDir = __dirname + '/upload/';
+            form.uploadDir = 'upload/';
+            var newPath = null;
+
+            form
+              .on('file', (field, file) => {
+                newPath = file.path
+                  + file.name.substr(file.name.lastIndexOf('.'));
+                fs.renameSync(file.path, newPath);
+              })
+              .on('end', () => {
+                utils.sendJsonResponse(res, 200, { success: true, url: newPath });
+              })
+            form.parse(req);
+            break;
+          default:
+            utils.sendJsonResponse(res, 501, { err: 'Not implemented' });
+        }
+        break;
       default:
-        utils.sendJsonResponse(res, 404, 'Resource not found');
+        fs.readFile(__dirname + req.url, function (err, data) {
+          if (err)
+            return utils.sendJsonResponse(res, 404, 'Resource not found');
+          res.writeHead(200);
+          res.end(data);
+        });
     }
   })
 })
-
-/**
- * Make server listen
- */
-server.listen({ host: config.hostname, port: config.port }, () => {
-  console.log(`Server running on http://${config.hostname}:${config.port}`);
-});
 
 /**
  * Create WebSocket server for chat interacting
@@ -137,18 +163,29 @@ const io = socket(server, {
     methods: ['GET', 'POST']
   }
 });
+
 io.on('connection', socket => {
-  socket.on('client to server',
-    msg => {
-      chatCtrl.insert(msg)
-        .then(
-          (newMsg) => {
-            socket.emit('server to client', newMsg);
-          }
-        )
-        .catch(err => socket.emit('server error', err));
-      ;
-    });
+  console.log('a user has connected', socket.id);
+
+  socket.on("disconnect", () => {
+    console.log("Client disconnected");
+  });
+
+  socket.on('event://send-message', msg => {
+    chatCtrl.insert(msg)
+      .then(
+        (newMsg) => {
+          io.emit('event://get-message', newMsg);
+        }
+      )
+  });
+});
+
+/**
+ * Make server listen
+ */
+server.listen({ host: config.hostname, port: config.port }, () => {
+  console.log(`Server running on http://${config.hostname}:${config.port}`);
 });
 
 module.exports = server;

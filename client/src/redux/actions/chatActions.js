@@ -59,7 +59,7 @@ const chatPost = (msg) => {
 
 const chatActions = {
   chatGet,
-  chatPost
+  chatPost,
 }
 
 export default chatActions;

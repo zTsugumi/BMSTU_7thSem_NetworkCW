@@ -7,6 +7,7 @@ import ReactDOM from 'react-dom';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
+import WebSocketProvider from './socket/WebSocket';
 import Main from './components/Main';
 import store from './redux/store';
 import './index.css';
@@ -14,9 +15,11 @@ import './index.css';
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
-      <BrowserRouter>
-        <Main />
-      </BrowserRouter>
+      <WebSocketProvider>
+        <BrowserRouter>
+          <Main />
+        </BrowserRouter>
+      </WebSocketProvider>
     </Provider>
   </React.StrictMode>,
   document.getElementById('root')
