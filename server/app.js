@@ -1,4 +1,4 @@
-const http = require('http');
+const https = require('https');
 const mongoose = require('mongoose');
 const fs = require('fs');
 //const multer = require('multer')
@@ -24,10 +24,16 @@ var connect = mongoose.connect(config.mongoURI,
 
 var logger = morgan('dev');
 
+var secPort = normalizePort(config.secPort);
+var options = {
+  key: fs.readFileSync(__dirname + '/bin/private.key'),
+  cert: fs.readFileSync(__dirname + '/bin/certificate.pem')
+};
+
 /**
- * Create HTTP server + REST api
+ * Create HTTPS server + REST api
  */
-var server = http.createServer((req, res) => {
+var server = https.createServer(options, (req, res) => {
   logger(req, res, (err) => {
     // Setup cors
     //cors.cors(req, res);
@@ -163,7 +169,6 @@ const io = socket(server, {
     methods: ['GET', 'POST']
   }
 });
-
 io.on('connection', socket => {
   console.log('a user has connected', socket.id);
 
@@ -184,8 +189,27 @@ io.on('connection', socket => {
 /**
  * Make server listen
  */
-server.listen({ host: config.hostname, port: config.port }, () => {
-  console.log(`Server running on http://${config.hostname}:${config.port}`);
+server.listen({ host: config.hostname, port: secPort }, () => {
+  console.log(`Server running on https://${config.hostname}:${secPort}`);
 });
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
 
 module.exports = server;

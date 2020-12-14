@@ -17,7 +17,7 @@
   },
   "scripts": {
     "dev": "SET NODE_ENV=development&&nodemon app",
-    "start": "NODE_ENV=production node bin/www"
+    "start": "NODE_ENV=production node app"
   },
   "author": "zTsugumi",
   "license": "ISC"

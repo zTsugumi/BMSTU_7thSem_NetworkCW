@@ -1,12 +1,12 @@
 //SERVER ROUTES
 export const SERVER_USER = process.env['NODE_ENV'] === 'development'
-  ? 'http://localhost:3000/api/users'
-  : 'http://localhost/api/users';
+  ? 'https://localhost:3443/api/users'
+  : 'https://localhost/api/users';
 
 export const SERVER_CHAT = process.env['NODE_ENV'] === 'development'
-  ? 'http://localhost:3000/api/chat'
-  : 'http://localhost/api/chat';
+  ? 'https://localhost:3443/api/chat'
+  : 'https://localhost/api/chat';
 
 export const SERVER = process.env['NODE_ENV'] === 'development'
-  ? 'http://localhost:3000'
-  : 'http://localhost';
+  ? 'https://localhost:3443'
+  : 'https://localhost';
