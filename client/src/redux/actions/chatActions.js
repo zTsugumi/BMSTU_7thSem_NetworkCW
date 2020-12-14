@@ -2,7 +2,7 @@ import {
   CHAT_REQUEST, CHAT_SUCCESS, CHAT_FAILURE,
   CHAT_POST
 } from './allTypes';
-
+import { DoDecrypt } from '../../encryption/aes';
 import { SERVER_CHAT } from '../../shared/config';
 
 /****************************************** GET ******************************************/
@@ -44,7 +44,17 @@ const chatGet = () => (dispatch) => {
       })
     .then(response => response.json())
     .then(response => {
-      dispatch(chatSuccess(response));
+      const allMsg = response.map(msg => {
+        return {
+          _id: msg._id,
+          message: DoDecrypt(msg.message),
+          sender: msg.sender,
+          type: msg.type,
+          atTime: msg.atTime
+        };
+      })
+
+      dispatch(chatSuccess(allMsg));
     })
     .catch(error => dispatch(chatError(error.message)));
 }

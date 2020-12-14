@@ -14,7 +14,6 @@ async function findAll(req, res) {
               firstname: chat.sender.firstname,
               lastname: chat.sender.lastname,
               role: chat.sender.role,
-              _id: chat.sender._id,
               email: chat.sender.email,
               image: chat.sender.image
             },
@@ -38,7 +37,7 @@ async function findAll(req, res) {
 async function insert(chat) {
   return new Promise((resolve, reject) => {
     try {
-      UserRepo.findOne({ email: chat.user.email })
+      UserRepo.findOne({ email: chat.email })
         .then(
           (user) => {
             if (newChat !== null) {
@@ -56,12 +55,11 @@ async function insert(chat) {
                       _id: chat._id,
                       message: chat.message,
                       sender: {
-                        firstname: chat.sender.firstname,
-                        lastname: chat.sender.lastname,
-                        role: chat.sender.role,
-                        _id: chat.sender._id,
-                        email: chat.sender.email,
-                        image: chat.sender.image
+                        firstname: user.firstname,
+                        lastname: user.lastname,
+                        role: user.role,
+                        email: user.email,
+                        image: user.image
                       },
                       type: chat.type,
                       atTime: chat.atTime

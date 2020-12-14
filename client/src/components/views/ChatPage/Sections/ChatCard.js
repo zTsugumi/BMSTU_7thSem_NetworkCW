@@ -19,7 +19,6 @@ function RenderFile({ message }) {
         );
       case 'png':
       case 'jpg':
-        console.log('sdfsdfsdf')
         return (
           <img
             style={{ maxWidth: '50%' }}

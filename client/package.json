@@ -6,6 +6,7 @@
     "@testing-library/jest-dom": "^5.11.6",
     "@testing-library/react": "^11.2.2",
     "@testing-library/user-event": "^12.2.2",
+    "aes256": "^1.0.4",
     "antd": "^4.8.5",
     "axios": "^0.21.0",
     "core-js": "^3.8.0",

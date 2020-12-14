@@ -27,7 +27,7 @@ function ChatPage(props) {
 
     var message = {
       content: chatMessage,
-      user: user.creds,
+      email: user.creds.email,
       atTime: moment(),
       type: "Text"
     }
@@ -64,7 +64,7 @@ function ChatPage(props) {
           // Send new image/video to all clients
           var newFile = {
             content: response.url,
-            user: user.creds,
+            email: user.creds.email,
             atTime: moment(),
             type: "VideoImage"
           }
