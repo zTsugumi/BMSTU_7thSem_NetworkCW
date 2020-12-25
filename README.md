@@ -1,9 +1,9 @@
 # Chat-app  
 
 ## Requirement  
-[Docker](https://www.docker.com)  
 [NodeJS](https://nodejs.org)  
 
 ## How to run
-`docker-compose build` to build all services  
-`docker-compose up` to start all containers and leave them running
+Run `npm install` to install all required packages
+On server: `npm run dev` to run developed server  
+On client: `npm start` to start developed client
