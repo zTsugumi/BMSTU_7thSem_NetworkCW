@@ -1,8 +1,8 @@
 import React from 'react';
 import { Menu } from 'antd';
 import { Link } from 'react-router-dom';
-const SubMenu = Menu.SubMenu;
-const MenuItemGroup = Menu.ItemGroup;
+// const SubMenu = Menu.SubMenu;
+// const MenuItemGroup = Menu.ItemGroup;
 
 function LeftMenu(props) {
   return (
@@ -13,7 +13,7 @@ function LeftMenu(props) {
       <Menu.Item key='chat'>
         <Link to="/chat">Chat</Link>
       </Menu.Item>
-      <SubMenu title={<span>Blogs</span>}>
+      {/* <SubMenu title={<span>Blogs</span>}>
         <MenuItemGroup title='Item 1'>
           <Menu.Item key='setting:1'>Option 1</Menu.Item>
           <Menu.Item key='setting:2'>Option 2</Menu.Item>
@@ -22,7 +22,7 @@ function LeftMenu(props) {
           <Menu.Item key='setting:3'>Option 3</Menu.Item>
           <Menu.Item key='setting:4'>Option 4</Menu.Item>
         </MenuItemGroup>
-      </SubMenu>
+      </SubMenu> */}
     </Menu>
   )
 }
