@@ -170,7 +170,7 @@ const io = socket(server, {
   }
 });
 io.on('connection', socket => {
-  console.log('a user has connected', socket.id);
+  console.log('A user has connected', socket.id);
 
   socket.on("disconnect", () => {
     console.log("Client disconnected");
